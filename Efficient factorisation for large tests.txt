@@ -1,0 +1,36 @@
+const int lim=1e7;
+vc<int> spf(lim,0);
+
+void fill()
+{
+    spf[1]=1;
+    for(ll i=2;i<lim;i++)
+    {
+        if(spf[i]==0)
+        {
+            spf[i]=i;
+            for(ll j=i*i;j<lim;j+=i)
+                if(spf[j]==0) 
+                spf[j]=i;
+        }
+    }
+}
+
+
+
+void factorise(vc<pair<int,int>> &p,int n)
+{
+    int k;
+
+    while(spf[n]!=1)
+    {
+        int div=spf[n];
+        k=0;
+
+        while(n%div==0)
+        k++,n/=div;
+        p.pb({div,k});
+
+    }
+
+}

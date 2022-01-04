@@ -1,0 +1,90 @@
+
+struct node
+{
+    node *arr[26];
+    bool end;
+    //	end_cnt denotes the number of prefixes ending
+    int end_cnt;
+};
+
+node *create_node()
+{
+    node *temp = new (node);
+    temp->end_cnt = 0;
+    temp->end = false;
+    for (int i = 0; i < 26; i++)
+    {
+        temp->arr[i] = NULL;
+    }
+    return temp;
+}
+
+class Trie
+{
+public:
+    node *root;
+    //		constructor
+    Trie()
+    {
+        root = create_node();
+    }
+
+    void insert(string s)
+    {
+        node *curr = root;
+        curr->end_cnt++;
+        for (char c : s)
+        {
+            int d = c - 'a';
+            if (curr->arr[d] == NULL)
+                curr->arr[d] = create_node();
+            curr = curr->arr[d];
+            curr->end_cnt++;
+        }
+        curr->end = true;
+    }
+
+    bool find(string s)
+    {
+        node *curr = root;
+        for (char c : s)
+        {
+            int d = c - 'a';
+            if (curr->arr[d] == NULL)
+                return false;
+            curr = curr->arr[d];
+        }
+        return curr->end;
+    }
+
+    void erase(string s)
+    {
+        node *curr = root;
+        curr->end_cnt--;
+        for (char c : s)
+        {
+            int d = c - 'a';
+            if (curr->arr[d] == NULL)
+                return;
+            curr = curr->arr[d];
+            curr->end_cnt--;
+        }
+        curr->end = false;
+    }
+
+    //how many have the given prefixes
+    int check_prefix(string s)
+    {
+        node *curr = root;
+        for (auto c : s)
+        {
+            int d = c - 'a';
+            if (curr->arr[d] == NULL)
+                return 0;
+            curr = curr->arr[d];
+        }
+        return curr->end_cnt;
+    }
+};
+
+

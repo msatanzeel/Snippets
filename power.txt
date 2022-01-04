@@ -1,0 +1,16 @@
+
+ll power(ll a,ll n)
+{
+    ll res=1,mod=M;
+    while(n)
+    {
+        if(n%2)
+        res=(res*a)%mod;
+
+        a=(a*a)%mod;
+        n=n/2;
+    }
+
+    return res;
+}
+

@@ -1,0 +1,179 @@
+
+struct node
+{
+    //ye jo hai initial value of node in segment tree rahta
+    //seg tree build karte so time pe ye value ka effect ny padna
+    // jyse ki sum ke time iski value 0 rahna....
+	ll v=0;
+	node(){}
+	node(ll val){
+		v=val;
+	}
+
+    // build karte so time kis tarah se niche ke do nodes ke values ku process krte
+    // wo cheez idar likhte
+	void merge(const node &l,const node &r){ 
+ 
+		v=l.v+r.v;
+	}
+};
+ 
+
+ 
+struct update
+{
+    //ye jo hai initial value rahti lazy tree ke node ki,
+    // take care so that,jysa b first pending update aata,wo update ku initial
+    // value effect ny krna
+	ll v = 0;
+	update(){}
+	update(int val){
+		v = val; 
+	}
+    // pehle jo lazy tree ke node pe info/pending update the,usku add krte idar
+	void combine(update &other,const ll &tl,const ll &tr){
+		v += other.v;
+ 
+	}
+
+    //idar jo hai apan lazy tree ka info/data ku seg tree ke node pe apply kardete
+    //tl aur tr jo hai , wo segment ke extremes hai
+    // x jo hai apanki original segment tree ki node hai aur v hai hai 
+    //lazy tree ke node me hai so value
+
+	void apply(node &x,const ll &tl,const ll &tr){
+		x.v += (tr-tl+1)*v;
+ 
+	}
+};
+ 
+struct segtree
+{
+	ll len;
+	vector<node> t;
+	vector<update> u;
+	vector<bool> lazy;
+	node identity_element;
+	update identity_transformation;
+	segtree(ll l){
+		len = l;
+		t.resize(4 * len);
+		u.resize(4 * len);
+		lazy.resize(4 * len);
+		identity_element = node();
+		identity_transformation = update();
+	}
+ 
+	void pushdown(const ll &v, const ll &tl, const ll &tr){
+		if(!lazy[v]) return;
+		ll tm = (tl + tr) >> 1;
+		apply(v<<1,tl,tm,u[v]);
+		apply(v<<1|1,tm+1,tr,u[v]);
+		u[v] = identity_transformation;
+		lazy[v] = 0;
+	}
+ 
+	void apply(const ll &v, const ll &tl, const ll &tr, update upd){
+		if(tl != tr){
+			lazy[v] = 1;
+			u[v].combine(upd,tl,tr);
+		}
+		upd.apply(t[v],tl,tr);
+	}
+ 
+	template<typename T>
+	void build(const T &arr,const ll &v, const ll &tl, const ll &tr){
+		if(tl == tr){
+			t[v] = arr[tl];
+			return;
+		}
+		int32_t tm = (tl + tr) >> 1;
+		build(arr,v<<1,tl,tm);
+		build(arr,v<<1|1,tm+1,tr);
+		t[v].merge(t[v<<1],t[v<<1|1]);
+	}
+ 
+	node query(const ll &v,const ll &tl,const ll &tr,const ll &l,const ll &r){
+		if(l > tr || r < tl){
+			return identity_element;
+		}
+		if(tl >= l && tr <= r){
+			return t[v];
+		}
+		pushdown(v,tl,tr);
+		int32_t tm = (tl + tr) >> 1;
+		node a = query(v<<1,tl,tm,l,r),b = query(v<<1|1,tm+1,tr,l,r),ans;
+		ans.merge(a,b);
+		return ans;
+	}
+ 
+	// rupd = range update
+	void rupd(const ll &v,const ll &tl,const ll &tr,const ll &l,const ll &r,const update &upd){
+		if(l > tr || r < tl){
+			return;
+		}
+		if(tl >= l && tr <= r){
+			apply(v,tl,tr,upd);
+			return;
+		}
+		pushdown(v,tl,tr);
+		int32_t tm = (tl + tr) >> 1;
+		rupd(v<<1,tl,tm,l,r,upd);
+		rupd(v<<1|1,tm+1,tr,l,r,upd);
+		t[v].merge(t[v<<1],t[v<<1|1]);
+	}
+ 
+	public:
+	template<typename T>
+	void build(const T &arr){
+		build(arr,1,0,len-1);
+	}
+	node query(const ll &l,const ll &r){
+		return query(1,0,len-1,l,r);
+	}
+	void rupd(const ll &l,const ll &r,const update &upd){
+		rupd(1,0,len-1,l,r,upd);
+	}
+};
+ 
+int main(){
+    int n;
+    cin>>n;
+
+    vector<ll> v(n);
+
+    for(int i=0;i<n;i++)
+    cin>>v[i];
+
+
+ 
+	segtree s(n);
+	s.build(v);
+
+    int q;
+    cin>>q;
+
+    int l,r,val,type;
+
+    while(q--)
+    {
+        cin>>type;
+
+        if(type==1)
+        {
+            cin>>l>>r>>val;
+            s.rupd(l,r,val);
+        }
+        else
+        {
+            cin>>l>>r;
+            cout<<s.query(l,r).v<<endl;
+        }
+
+
+
+    }
+
+
+	return 0;
+}

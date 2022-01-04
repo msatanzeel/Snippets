@@ -1,0 +1,46 @@
+
+struct DSU
+{
+    vector<int> parent, com_size, com_max, com_min;
+
+    //  parent --> parent of the component
+    //	com_size --> component_size
+    //  com_max --> component_max
+    //  com_min --> component_min
+    DSU(int n)
+    {
+        parent.resize(n + 1);
+        com_size.resize(n + 1);
+        com_max.resize(n + 1);
+        com_min.resize(n + 1);
+
+        for (int i = 1; i <= n; i++)
+        {
+            parent[i] = i;
+            com_size[i] = 1;
+            com_max[i] = i;
+            com_min[i] = i;
+        }
+    }
+
+    int get_par(int x)
+    {
+        if (x == parent[x])
+            return x;
+        return parent[x] = get_par(parent[x]);
+    }
+
+    //	True return value indicates that the nodes are already connected
+    bool unite(int a, int b)
+    {
+        a = get_par(a);
+        b = get_par(b);
+        if (a == b)
+            return false;
+        parent[a] = b;
+        com_size[b] += com_size[a];
+        com_max[b] = max(com_max[b], com_max[a]);
+        com_min[b] = min(com_min[b], com_min[a]);
+        return true;
+    }
+};
