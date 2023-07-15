@@ -1,4 +1,35 @@
-#include <bits/stdc++.h>
+// #include <bits/stdc++.h>
+#include <algorithm>
+#include <iostream>
+#include <vector>
+#include <list>
+#include <deque>
+#include <set>
+#include <map>
+#include <unordered_set>
+#include <unordered_map>
+#include <functional>
+#include <utility>
+#include <queue>
+#include <stack>
+#include <bitset>
+#include <string>
+#include <cstring>
+#include <cmath>
+#include <cstdio>
+#include <numeric>
+#include <cassert>
+#include <ctime>
+#include <cstdlib>
+#include <iterator>
+#include <sstream>
+#include <iomanip>
+#include <random>
+#include <limits>
+#include <fstream>
+
+
+
 using namespace std;
 #define ll long long
 #define loopf(i, a, b) for (int i = a; i < b; i++)
