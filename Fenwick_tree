@@ -1,0 +1,39 @@
+class Fenwick
+{
+public:
+    vector<int> v;
+    int n;
+
+    Fenwick() {
+        n = 0;
+        v.clear();
+    }
+
+    Fenwick(int n)
+    {
+        this->n = n;
+        v.resize(n + 1, 0); // 1 indexing
+    }
+
+    int query(int ind)
+    {
+        int ans = 0;
+        while (ind > 0)
+        {
+            ans += v[ind]; // modify this operation for xor/or/and
+            ind -= (ind & (-ind)); // remove the last significant bit
+        }
+        return ans;
+    }
+
+    void aggregate(int index, int val) {
+        while (index <= n) {
+            v[index] += val;
+            index += (index & (-index)); // add the last set bit
+        }
+    }
+
+    int query(int l, int r) {
+        return query(r) - query(l-1); // modify it accordingly for xor, multiplication etc
+    }
+};
