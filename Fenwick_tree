@@ -1,10 +1,12 @@
 class Fenwick
 {
-public:
-    vector<int> v;
-    int n;
 
-    Fenwick() {
+public:
+    int n;
+    vector<int> v;
+
+    Fenwick()
+    {
         n = 0;
         v.clear();
     }
@@ -12,7 +14,17 @@ public:
     Fenwick(int n)
     {
         this->n = n;
-        v.resize(n + 1, 0); // 1 indexing
+        v.clear();
+        v.resize(n + 1);
+    }
+
+    void aggregate(int ind, int val)
+    {
+        while (ind <= n)
+        {
+            v[ind] += val;
+            ind += (ind & (-ind));
+        }
     }
 
     int query(int ind)
@@ -20,20 +32,31 @@ public:
         int ans = 0;
         while (ind > 0)
         {
-            ans += v[ind]; // modify this operation for xor/or/and
-            ind -= (ind & (-ind)); // remove the last significant bit
+            ans += v[ind];
+            ind -= (ind & (-ind));
         }
         return ans;
     }
 
-    void aggregate(int index, int val) {
-        while (index <= n) {
-            v[index] += val;
-            index += (index & (-index)); // add the last set bit
-        }
+    int query(int l, int r)
+    {
+        return query(r, l - 1);
     }
 
-    int query(int l, int r) {
-        return query(r) - query(l-1); // modify it accordingly for xor, multiplication etc
+    int findKthSmall(int k)
+    {
+        int sum = 0;
+        int pos = 0;
+        
+        for(int i=(int)log2(n); i>=0; i--)
+        {
+            if(pos + (1 << i) <= n and sum + v[pos + (1 << i)] < k)
+            {
+                sum += v[pos + (1 << i)];
+                pos += (1 << i);
+            }
+        }
+
+        return pos + 1;
     }
 };
