@@ -1,0 +1,88 @@
+
+class Node
+{
+public:
+    int ended;
+    int running;
+    vector<Node *> arr;
+
+    Node()
+    {
+        ended = 0;
+        running = 0;
+        arr.resize(26, NULL);
+    }
+};
+
+class Trie
+{
+
+public:
+    Node *root;
+    Trie()
+    {
+        root = new Node();
+    }
+
+    void insert(string &word)
+    {
+        Node *curr = this->root;
+        curr->running++;
+
+        for (char c : word)
+        {
+            int dist = c - 'a';
+            if (curr->arr[dist] == NULL)
+                curr->arr[dist] = new Node();
+            curr = curr->arr[dist];
+            curr->running++;
+        }
+        curr->ended++;
+    }
+
+    int countWordsEqualTo(string &word)
+    {
+        Node *curr = this->root;
+        for (char c : word)
+        {
+            int dist = c - 'a';
+            if (curr->arr[dist] == NULL)
+                return 0;
+            curr = curr->arr[dist];
+        }
+        return curr->ended;
+    }
+
+    int countWordsStartingWith(string &word)
+    {
+        Node *curr = this->root;
+        for (char c : word)
+        {
+            int dist = c - 'a';
+            if (curr->arr[dist] == NULL)
+                return 0;
+            curr = curr->arr[dist];
+        }
+        return curr->running;
+    }
+
+    void erase(string &word)
+    {
+        Node *curr = this->root;
+        curr->running--;
+        for (char c : word)
+        {
+            int dist = c - 'a';
+            if (curr->arr[dist] == NULL)
+                return;
+            curr->arr[dist]->running--;
+            if (curr->arr[dist]->running == 0)
+            {
+                curr->arr[dist] = NULL;
+                return;
+            }
+            curr = curr->arr[dist];
+        }
+        curr->ended--;
+    }
+};
